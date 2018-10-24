@@ -63,7 +63,7 @@ bool processJson(char* message) {
         char g = input["color"]["g"];
         char b = input["color"]["b"];
         status.color = CRGB(r, g, b);
-        animate_set_color(status.color);
+        animate.set_color(status.color);
 
         JsonObject& color = output.createNestedObject("color");
         color["r"] = r;
@@ -74,7 +74,7 @@ bool processJson(char* message) {
     if (input.containsKey("state")) {
         if (strcmp(input["state"], "ON") == 0) {
             if (status.on == false) {
-                animate_set_on();
+                animate.set_on();
             }
             status.on = true;
             status.state = "ON";
@@ -82,7 +82,7 @@ bool processJson(char* message) {
         }
         else if (strcmp(input["state"], "OFF") == 0) {
             if (status.on == true) {
-                animate_set_off();
+                animate.set_off();
             }
             status.on = false;
             status.state = "OFF";
@@ -93,39 +93,39 @@ bool processJson(char* message) {
     if (input.containsKey("effect")) {
         status.effect = (const char*)input["effect"];
         output["effect"] = status.effect.c_str();
-        animate_set_effect(status.effect.c_str());
+        animate.set_effect(status.effect.c_str());
     }
 
     if (input.containsKey("brightness")) {
         status.brightness = input["brightness"];
         output["brightness"] = status.brightness;
-        animate_set_brightness(status.brightness);
+        animate.set_brightness(status.brightness);
     }
 
     if (input.containsKey("speed")) {
         status.speed = input["speed"];
         output["speed"] = status.speed;
-        animate_set_speed(status.speed);
+        animate.speed = input["speed"];
     }
 
     // todo
     // use list/loop/for {'p1', 'p2', 'p3'}
     if (input.containsKey("p1")) {
         output["p1"] = input["p1"];
-        animate_set_p1(input["p1"]);
+        animate.p1 = input["p1"];
     }
 
     if (input.containsKey("p2")) {
         output["p2"] = input["p2"];
-        animate_set_p2(input["p2"]);
+        animate.p2 = input["p2"];
     }
 
     if (input.containsKey("p3")) {
         output["p3"] = input["p3"];
-        animate_set_p3(input["p3"]);
+        animate.p3 = input["p3"];
     }
 
-    animate_start();
+    animate.start();
 
     // ---------------------- send status mqtt message -------------------------
     char buffer[output.measureLength() + 1];

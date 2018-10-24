@@ -30,13 +30,14 @@ load config file from serial
 #include <PubSubClient.h>
 #include <FastLED.h>
 
-// #include "setup.h"
+#include "Animate.h"
 #include "config.h"
 
 // ================================== GLOBALS ==================================
 WiFiClient espClient;
 PubSubClient mqtt(espClient);
 CRGB leds[NUM_LEDS];
+Animate animate(NUM_LEDS);
 
 // ==================================  SETUP  ==================================
 void setup() {
@@ -59,6 +60,6 @@ void loop() {
     }
 
     mqtt.loop();
-    animate_loop(leds);
+    animate.loop(leds);
     // ArduinoOTA.handle();
 }
