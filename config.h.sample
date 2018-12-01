@@ -1,0 +1,18 @@
+// =================================== CONFIGURATION ===========================
+
+#define NUM_LEDS    52
+#define DATA_PIN    3         // RX pin
+#define CHIPSET     WS2812B
+#define COLOR_ORDER GRB
+
+struct config_struct {
+    const char*   wifi_ssid = "your_wifi_ssid";
+    const char*   wifi_password = "your_wifi_password";
+    const char*   mqtt_server = "192.168.24.115";
+    const char*   mqtt_username = "";
+    const char*   mqtt_password = "";
+    const int     mqtt_port = 1883;
+    const char*   mqtt_topic = "home/light/ARDUINO-";
+    const int     status_led = 2;
+    const boolean status_led_inversed = true;
+} myconf;

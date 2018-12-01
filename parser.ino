@@ -137,23 +137,3 @@ bool processJson(char* message) {
     mqtt.publish(String(topic + "status").c_str(), buffer, false);
     return true;
 }
-
-
-// String getStatusString() {
-//     StaticJsonBuffer<BUFFER_SIZE> outputBuffer;
-//     JsonObject& output = outputBuffer.createObject();
-
-//     output["state"] = status.state.c_str();
-
-//     JsonObject& color = output.createNestedObject("color");
-//     color["r"] = status.color.r;
-//     color["g"] = status.color.g;
-//     color["b"] = status.color.b;
-
-//     output["effect"] = status.effect.c_str();
-//     output["brightness"] = status.brightness;
-
-//     char buffer[output.measureLength() + 1];
-//     output.printTo(buffer, sizeof(buffer));
-//     return String(buffer);
-// }

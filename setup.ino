@@ -60,7 +60,6 @@ void mqtt_connect(void) {
             Serial.println("connected");
             mqtt.publish(String(topic + "ip").c_str(), WiFi.localIP().toString().c_str(), true);
             mqtt.publish(String(topic + "info").c_str(), "online", true);
-            // mqtt.publish(String(topic + "status").c_str(), getStatusString().c_str(), true);
 
             mqtt.subscribe(String(topic + "#").c_str());
         } else {

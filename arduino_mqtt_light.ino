@@ -11,22 +11,10 @@
       - ArduinoJSON
 */
 
-/*
-todo:
-load config file from serial
-
-    strchr(): search for a character in a C string (i.e. char *)
-    strtok(): splits a C string into substrings, based on a separator character
-    atoi(): converts a C string to an int
-*/
-
-
 #define FASTLED_ESP8266_DMA
 
 #include <ESP8266WiFi.h>
-// #include <ESP8266mDNS.h>
 #include <Arduino.h>
-// #include <ArduinoOTA.h>
 #include <PubSubClient.h>
 #include <FastLED.h>
 
@@ -61,5 +49,4 @@ void loop() {
 
     mqtt.loop();
     animate.loop(leds);
-    // ArduinoOTA.handle();
 }
