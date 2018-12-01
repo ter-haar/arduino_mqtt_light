@@ -1,4 +1,3 @@
-# H801 vs micropython
 ## Konfiguracja Home Assistant
 
 Przykładowa konfiguracja home assistant'a:
