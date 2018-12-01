@@ -7,6 +7,8 @@ W arduino IDE musisz zainstalować biblioteki:
 * PubSubClient
 * ArduinoJSON
 
+------------------------------
+
 1) Sklonuj/skopiuj to repozytorium.
 2) Edytuj konfiguracje w pliku config.h.sample, zapisz jako config.h
 3) Skompiluj, załaduj do kontrolera.
