@@ -11,7 +11,8 @@ W arduino IDE musisz zainstalować biblioteki:
 2) Edytuj konfiguracje w pliku config.h.sample, zapisz jako config.h
 3) Skompiluj, załaduj do kontrolera.
 
-Jeżeli podczas animiacji diody migoczą, przygasają i ogólnie całość jest niestabilna polecam przeczytać https://github.com/bruhautomation/ESP-MQTT-JSON-Digital-LEDs/issues/60. 
+Jeżeli podczas animiacji diody migoczą, przygasają i ogólnie całość jest niestabilna polecam przeczytać:
+https://github.com/bruhautomation/ESP-MQTT-JSON-Digital-LEDs/issues/60. 
 
 Remedium na te problemy jest instalacja biblioteki [FastLED DMA](https://github.com/coryking/FastLED)
 
