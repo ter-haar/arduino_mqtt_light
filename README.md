@@ -1,7 +1,13 @@
-# arduino_mqtt_light
+# Arduino fastled
+## Sterownik mqtt digital led.
 
+Sterownik cyfrowych pasków ledowych (układy ws2812 i podobne). Ten projekt to kontynuacja sterowników H801:
+* [python](https://github.com/ter-haar/h801_mqtt_light) 
+* [lua](https://github.com/ter-haar/lua_mqtt_light). 
 
-setBrightness
-blur1d( leds, NUM_LEDS, animate.speed);
+Znudziło mi się programowanie H801, diody ws2812 najprościej programować w arduino (ma najbardziej rozbudowaną bibliotekę). 
 
-mosquitto_pub -h 192.168.24.115 -t home/light/ARDUINO-3104834/set -m '{"speed": 4, "p1": 3, "p2": 4, "p3": 5}'
+-------------------
+* [Opis instalacji](install_pl.md)
+* [Konfiguracja HomeAssistanta](hass_pl.md)
+* [Mqtt](mqtt_pl.md)
