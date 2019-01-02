@@ -1,9 +1,5 @@
 ## Arduino mqtt digital led
 
-```
-mosquitto_pub -h adres.brokera.mqtt -t 'home/light/E801-5d916f00/cmd' -m 'ping'
-```
-
 * włączenie
 ```
 home/light/ARDUINO-2779185/set {"state": "ON"}
@@ -30,6 +26,6 @@ home/light/ARDUINO-2779185/set {"p1": 1, "p2": 2, "p3": 3}
 ```
 
 * zmiana szybkości (znaczenie zależne od aktualnie wybranego efektu)
+```
 home/light/ARDUINO-2779185/set {"speed": 30}
-
-
+```
