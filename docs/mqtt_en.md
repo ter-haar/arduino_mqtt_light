@@ -1,9 +1,5 @@
 ## Arduino mqtt digital led
 
-```
-mosquitto_pub -h adres.brokera.mqtt -t 'home/light/E801-5d916f00/cmd' -m 'ping'
-```
-
 * turn on
 ```
 home/light/ARDUINO-2779185/set {"state": "ON"}
