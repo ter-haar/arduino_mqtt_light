@@ -26,6 +26,8 @@ home/light/ARDUINO-2779185/set {"p1": 1, "p2": 2, "p3": 3}
 ```
 
 * change the speed (depends on the chosen effect)
+```
 home/light/ARDUINO-2779185/set {"speed": 30}
+```
 
 

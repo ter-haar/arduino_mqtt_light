@@ -3,7 +3,7 @@
 
 Driver for LED stripes (WS2812 and similar). This project is continuation of H801 drivers:
 * [python](https://github.com/ter-haar/h801_mqtt_light)
-* [lua](https://github.com/ter-haar/lua_mqtt_light).
+* [lua](https://github.com/ter-haar/lua_mqtt_light)
 
 I was bored with programming H801. WS2812 are easiest to program in Arduino (it has most broaden library).
 
