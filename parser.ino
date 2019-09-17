@@ -8,6 +8,7 @@
 struct status_struct {
     String      state = "OFF";
     String      effect = "solid";
+    String      transition = "fade";
     bool        on = false;
     int         brightness = 255;
     int         speed = 10;
@@ -94,6 +95,12 @@ bool processJson(char* message) {
         status.effect = (const char*)input["effect"];
         output["effect"] = status.effect.c_str();
         animate.set_effect(status.effect.c_str());
+    }
+
+    if (input.containsKey("transition")) {
+        status.transition = (const char*)input["transition"];
+        output["transition"] = status.transition.c_str();
+        animate.set_transition(status.transition.c_str());
     }
 
     if (input.containsKey("brightness")) {
