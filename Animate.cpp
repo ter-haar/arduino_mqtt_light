@@ -12,12 +12,12 @@ Animate::Animate(int count) {
 
 void Animate::start(void) {
     iteration = 0;
-    trans_poz = 0;
 }
 
 void Animate::set_color(CRGB color) {
     old_color = final_color;
     final_color = color;
+    color_poz = 0;
 }
 
 void Animate::set_effect(const char *ptr) {
@@ -34,19 +34,26 @@ void Animate::set_brightness(int val) {
 
 void Animate::set_on(void) {
     on = true;
+    trans_poz = 0;
 }
 
 void Animate::set_off(void) {
     on = false;
+    trans_poz = 0;
 }
 
 void Animate::loop(CRGB *leds) {
-    if (iteration >= 256) {
-        return;
-    }
-
-
     EVERY_N_MILLISECONDS(3) {
+        // if (!on) {
+        //     if (iteration > 10000) {
+        //         fill_solid(leds, NUM_LEDS, CRGB::Black);
+        //         _show_leds(final_brightness);
+        //     }
+
+        //     iteration++;
+        //     return;
+        // }
+
         // --------------- animate brightness --------------------
         if (current_brightness < final_brightness) {
             current_brightness+=1;
@@ -57,28 +64,34 @@ void Animate::loop(CRGB *leds) {
             current_brightness = max(current_brightness, final_brightness);
         }
 
-        // ------------- animate fade in / fade out -------------
+        // ------------- animate ON/OFF transition (fade)---------
         if (strcmp(transition, "fade") == 0) {
-            if (on && fade < 255) {
-                fade+=1;
-                fade = min(fade, 255);
+            if (on && current_fade < 255) {
+                current_fade++;
+                current_fade = min(current_fade, 255);
             }
-            if (!on && fade > 0) {
-                fade-=1;
-                fade = max(fade, 0);
+            if (!on && current_fade > 0) {
+                current_fade--;
+                current_fade = max(current_fade, 0);
             }
         } else {
-            fade = 255;
+            current_fade = 255;
         }
 
         // ------------- animate color --------------------------
         if (old_color != final_color) {
-            if (iteration < 255) {
-                current_color = blend(old_color, final_color, iteration);
+            if (color_poz < 255) {
+                current_color = blend(old_color, final_color, color_poz++);
             } else {
                 current_color = final_color;
                 old_color = final_color;
             }
+        }
+
+        if (delay_loop >= speed) {
+            delay_loop = 1;
+        } else {
+            delay_loop++;
         }
 
         // =========================== EFFECTS =================================
@@ -86,8 +99,9 @@ void Animate::loop(CRGB *leds) {
         // --------------- effect solid --------------------
         if (strcmp(effect, "solid") == 0) {
             fill_solid(leds, NUM_LEDS, current_color);
-            iteration += 1;
-            _show_leds(current_brightness);
+            if (strcmp(transition, "fade") == 0) {
+                _show_leds(current_brightness);
+            }
         }
 
         // --------------- effect sinelon ------------------
@@ -110,31 +124,27 @@ void Animate::loop(CRGB *leds) {
         // --------------- effect loop ---------------------
         else if (strcmp(effect, "loop") == 0) {
             fadeToBlackBy(leds, NUM_LEDS, p3);
-            if (speed_loop >= speed) {
-                speed_loop = 1;
-                loop_poz = (loop_poz += 1) % NUM_LEDS;
-                leds[loop_poz] = final_color;
+            if (delay_loop == 1) {
+                loop_effect_poz = (loop_effect_poz += 1) % NUM_LEDS;
+                leds[loop_effect_poz] = final_color;
                 _show_leds(current_brightness);
-            } else {
-                speed_loop++;
             }
         }
 
         // --------------- effect loop rgb -----------------
         else if (strcmp(effect, "loop rgb") == 0) {
             fadeToBlackBy(leds, NUM_LEDS, p3);
-            if (speed_loop >= speed) {
-                speed_loop = 1;
-                loop_poz = (loop_poz += 1) % NUM_LEDS;
-                leds[loop_poz] = CHSV(hue++, 255, 255);
+            if (delay_loop == 1) {
+                loop_effect_poz = (loop_effect_poz += 1) % NUM_LEDS;
+                leds[loop_effect_poz] = CHSV(hue++, 255, 255);
                 _show_leds(current_brightness);
-            } else {
-                speed_loop++;
             }
         }
 
         // ------------ effect rainbow (fedeout) -----------
         else if (strcmp(effect, "rainbow") == 0) {
+            fill_rainbow(leds, NUM_LEDS, hue, p1);
+            _add_hue();
             if (strcmp(transition, "fade") == 0) {
                 _show_leds(current_brightness);
             }
@@ -179,12 +189,9 @@ void Animate::loop(CRGB *leds) {
         else if (strcmp(effect, "random dots") == 0) {
             if (p1 > 1) fadeToBlackBy(leds, NUM_LEDS, p3);
             if (p2 > 1) blur1d( leds, NUM_LEDS, p3);
-            if (speed_loop >= speed) {
-                speed_loop = 1;
+            if (delay_loop == 1) {
                 leds[ random16(NUM_LEDS) ] = CHSV(random8(), 255, 255);
                 _show_leds(current_brightness);
-            } else {
-                speed_loop++;
             }
         }
 
@@ -209,7 +216,9 @@ void Animate::loop(CRGB *leds) {
                     leds, NUM_LEDS, CHSV(starthue,255,255), CHSV(endhue,255,255), BACKWARD_HUES
                 );
             }
-            _show_leds(current_brightness);
+            if (strcmp(transition, "fade") == 0) {
+                _show_leds(current_brightness);
+            }
         }
     }
 
@@ -226,30 +235,25 @@ void Animate::loop(CRGB *leds) {
             _show_leds(current_brightness);
         }
 
-        // =========================== TRANSITIONS =================================
-        else if (strcmp(effect, "rainbow") == 0) {
-            fill_rainbow(leds, NUM_LEDS, hue, p1);
-            _add_hue();
-
+        // ------------- animate ON/OFF transition (1l0r, 1r0l ......)---------
+        // =========================== ON/OFF TRANSITIONS ========================
+        if ((strcmp(effect, "solid") == 0) || (strcmp(effect, "rainbow") == 0) || (strcmp(effect, "gradients") == 0)) {
             if (trans_poz < NUM_LEDS) {
-                int x;
-                if (strcmp(transition, "on_off") == 0) {
-                    if (on) {
-                        x = NUM_LEDS - trans_poz - 1;
-                    } else {
-                        x = trans_poz;
-                    }
-
-                    for (int i=0;i<=x;i++) leds[i] = CRGB::Black;
+                if (strcmp(transition, "1l0r") == 0) {
+                    _on_from_left(leds);
+                    _off_from_right(leds);
                 }
-                if (strcmp(transition, "off_on") == 0) {
-                    if (on) {
-                        x = trans_poz;
-                    } else {
-                        x = NUM_LEDS - trans_poz - 1;
-                    }
-
-                    for (int i=x;i<NUM_LEDS;i++) leds[i] = CRGB::Black;
+                if (strcmp(transition, "1r0l") == 0) {
+                    _on_from_right(leds);
+                    _off_from_left(leds);
+                }
+                if (strcmp(transition, "1l0l") == 0) {
+                    _on_from_left(leds);
+                    _off_from_left(leds);
+                }
+                if (strcmp(transition, "1r0r") == 0) {
+                    _on_from_right(leds);
+                    _off_from_right(leds);
                 }
 
                 trans_poz++;
@@ -258,12 +262,13 @@ void Animate::loop(CRGB *leds) {
                     fill_solid(leds, NUM_LEDS, CRGB::Black);
                 }
             }
-            _show_leds(final_brightness);
+            _show_leds(current_brightness);
         }
     }
 
     EVERY_N_SECONDS(5) {
         random16_add_entropy(random8());
+
         targetPalette = CRGBPalette16(
             CHSV(random8(), 255, random8(128, 255)),
             CHSV(random8(), 255, random8(128, 255)),
@@ -282,15 +287,60 @@ void Animate::_addGlitterColor(CRGB *leds, fract8 chanceOfGlitter, CRGB color)
 }
 
 void Animate::_show_leds(uint8_t brightness) {
-    FastLED.setBrightness(min(brightness, fade));
+    FastLED.setBrightness(min(brightness, current_fade));
     FastLED.show();
 }
 
-void Animate::_add_hue() {
-    if (speed_loop >= speed) {
-        speed_loop = 1;
+void Animate::_add_hue(void) {
+    if (delay_loop == 1) {
         hue++;
-    } else {
-        speed_loop++;
+    }
+}
+
+void Animate::_on_from_left(CRGB *leds) {
+    if (on) {
+        int x = NUM_LEDS - trans_poz - 1;
+        for (int i=0;i<=x;i++) leds[i] = CRGB::Black;
+    }
+}
+
+void Animate::_on_from_right(CRGB *leds) {
+    if (on) {
+        int x = trans_poz;
+        for (int i=x;i<NUM_LEDS;i++) leds[i] = CRGB::Black;
+    }
+}
+
+void Animate::_off_from_left(CRGB *leds) {
+    if (!on) {
+        int x = NUM_LEDS - trans_poz - 1;
+        for (int i=x;i<NUM_LEDS;i++) leds[i] = CRGB::Black;
+    }
+}
+
+void Animate::_off_from_right(CRGB *leds) {
+    if (!on) {
+        int x = trans_poz;
+        for (int i=0;i<=x;i++) leds[i] = CRGB::Black;
+    }
+}
+
+void Animate::_on_from_center(CRGB *leds) {
+    if (on) {
+    }
+}
+
+void Animate::_on_from_edges(CRGB *leds) {
+    if (on) {
+    }
+}
+
+void Animate::_off_from_center(CRGB *leds) {
+    if (!on) {
+    }
+}
+
+void Animate::_off_from_edges(CRGB *leds) {
+    if (!on) {
     }
 }
